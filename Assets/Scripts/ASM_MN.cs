@@ -59,10 +59,7 @@ public class ASM_MN : Singleton<ASM_MN>
     public void YC2()
     {
         // sinh viên viết tiếp code ở đây
-        /*listPlayers.Sort((a, b) => b.Region.ComparareTo(a.Region));
-        ListPlayers.ForEach(Players => 
-        {
-            Console.WriteLine($"Id: {Players.Id}, Name : {Players.Name}, Scro ");*/
+        
         foreach (Players p in listPlayer)
         {
             string rank = calculate_rank(p.Score);
@@ -73,26 +70,81 @@ public class ASM_MN : Singleton<ASM_MN>
     public void YC3()
     {
         // sinh viên viết tiếp code ở đây
+        int currentScore = ScoreKeeper.Instance.GetScore();
+
+        foreach (Players p in listPlayer)
+        {
+            if (p.Score < currentScore)
+            {
+                Debug.Log($"[YC3] ID: {p.Id}, Name: {p.Name}, Score: {p.Score}, Region: {p.Region.Name}");
+            }
+        }
     }
     public void YC4()
     {
         // sinh viên viết tiếp code ở đây
+        int currentId = ScoreKeeper.Instance.GetID();
+
+        var player = listPlayer.FirstOrDefault(p => p.Id == currentId);
+        if (player != null)
+        {
+            Debug.Log($"[YC4] ID: {player.Id}, Name: {player.Name}, Score: {player.Score}, Region: {player.Region.Name}");
+        }
+        else
+        {
+            Debug.Log($"[YC4] Không tìm thấy người chơi có ID = {currentId}");
+        }
     }
     public void YC5()
     {
         // sinh viên viết tiếp code ở đây
+        var sortedList = listPlayer.OrderByDescending(p => p.Score).ToList();
+
+        foreach (Players p in sortedList)
+        {
+            Debug.Log($"[YC5] ID: {p.Id}, Name: {p.Name}, Score: {p.Score}, Region: {p.Region.Name}");
+        }
     }
     public void YC6()
     {
         // sinh viên viết tiếp code ở đây
+        var lowest5 = listPlayer.OrderBy(p => p.Score).Take(5).ToList();
+
+        foreach (Players p in lowest5)
+        {
+            Debug.Log($"[YC6] ID: {p.Id}, Name: {p.Name}, Score: {p.Score}, Region: {p.Region.Name}");
+        }
     }
     public void YC7()
     {
         // sinh viên viết tiếp code ở đây
+        Thread thread = new Thread(CalculateAndSaveAverageScoreByRegion);
+        thread.Name = "BXH";
+        thread.IsBackground = true; // chạy ngầm, tự kết thúc nếu app đóng
+        thread.Start();
+
     }
     void CalculateAndSaveAverageScoreByRegion()
     {
         // sinh viên viết tiếp code ở đây
+        var grouped = listPlayer
+        .GroupBy(p => p.Region.Name)
+        .Select(g => new
+        {
+            RegionName = g.Key,
+            AverageScore = g.Average(p => p.Score)
+        });
+
+        string path = "bxhRegion.txt";
+        using (StreamWriter writer = new StreamWriter(path))
+        {
+            foreach (var item in grouped)
+            {
+                writer.WriteLine($"Region: {item.RegionName} - Average Score: {item.AverageScore:F2}");
+            }
+        }
+
+        Debug.Log("Đã ghi file " + path);
     }
 
 }

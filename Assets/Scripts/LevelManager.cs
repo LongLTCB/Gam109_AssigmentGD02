@@ -49,6 +49,12 @@ public class LevelManager : MonoBehaviour
 
     public void LoadGame()
     {
+        if (userName == null || dropdown == null)
+    {
+        SceneManager.LoadScene("Game");
+        return;
+    }
+
         if (userName.text.Trim().Length == 0) return;
         ScoreKeeper.Instance.ResetScore(userName.text, dropdown.value);
         SceneManager.LoadScene("Game");
